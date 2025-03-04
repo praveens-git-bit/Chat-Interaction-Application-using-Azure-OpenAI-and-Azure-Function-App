@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure OpenAI Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="flex justify-center items-center h-screen bg-gray-100">
+    <div class="w-full max-w-2xl bg-white shadow-lg rounded-lg">
+        <div class="bg-blue-600 text-white text-center p-4 text-xl font-bold">Azure OpenAI Chat</div>
+
+        <div id="chat-box" class="p-4 h-96 overflow-auto"></div>
+
+        <div class="p-4 border-t flex items-center">
+            <!-- Hidden File Input -->
+            <input type="file" id="image-input" class="hidden" accept="image/*">
+
+            <!-- Image Upload Icon with Tooltip -->
+            <div class="relative group">
+                <button onclick="document.getElementById('image-input').click()" class="p-2 bg-gray-200 rounded-lg hover:bg-gray-300">
+                    <i data-lucide="image" class="w-6 h-6 text-gray-600"></i>
+                </button>
+                <!-- Tooltip -->
+                <span class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                    Upload Image
+                </span>
+            </div>
+
+            <!-- Text Input -->
+            <input id="user-input" class="flex-1 p-2 border rounded-lg mx-2" placeholder="Type your message...">
+            
+            <!-- Send Button -->
+            <button onclick="sendMessage()" class="bg-blue-600 text-white px-4 py-2 rounded-lg">
+                <i data-lucide="send" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();  // Initialize icons
+
+        function sendMessage() {
+            let userInput = document.getElementById("user-input").value;
+            let chatBox = document.getElementById("chat-box");
+
+            if (!userInput.trim()) return;
+
+            // Display user message
+            chatBox.innerHTML += `<div class="p-2 bg-blue-500 text-white rounded-lg ml-auto max-w-xs">${userInput}</div>`;
+
+            // Send request to backend
+            fetch("http://127.0.0.1:5000/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ message: userInput })
+            })
+    
+            .then(response => response.json())  // Parse JSON response
+            .then(data => {
+                console.log("API Response:", data);
+
+                // Ensure we access the correct response key
+                const botReply = data.response || "No response received";  
+
+                // Display bot's response in the chatbox
+                chatBox.innerHTML += `<div class="p-2 bg-gray-300 text-black rounded-lg max-w-xs">${botReply}</div>`;
+        
+                // Scroll to the bottom
+                chatBox.scrollTop = chatBox.scrollHeight;
+            })
+            .catch(error => console.error("Error:", error));
+
+            // Clear input field
+            document.getElementById("user-input").value = "";
+        }
+
+
+        function displayMessage(message, sender) {
+            const chatContainer = document.getElementById("chatContainer");
+            const messageDiv = document.createElement("div");
+            messageDiv.className = sender;
+            messageDiv.innerText = message;
+            chatContainer.appendChild(messageDiv);
+        }
+
+        document.getElementById("image-input").addEventListener("change", function () {
+            let file = this.files[0];
+            if (!file) return;
+
+            let formData = new FormData();
+            formData.append("image", file);
+
+            fetch("/upload", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+            })
+            .catch(() => {
+                alert("Upload failed!");
+            });
+        });
+    </script>
+</body>
+</html>

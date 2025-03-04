@@ -1,0 +1,29 @@
+function sendMessage() {
+            let userInput = document.getElementById("user-input").value;
+            let chatBox = document.getElementById("chat-box");
+
+            if (!userInput.trim()) return;
+
+            chatBox.innerHTML += <div class="p-2 bg-blue-500 text-white rounded-lg ml-auto max-w-xs">${userInput}</div>;
+
+            fetch("http://127.0.0.1:5000/chat", {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json"
+            },
+            body: JSON.stringify({message: userInput})
+            })
+
+            .then(response => response.json())
+            
+            .then(data => console.log(data))
+            .catch(error => console.error("Error:", error))
+            // Ensure we access the correct response key
+            const botReply = data.response || "No response received" 
+            .then(data => {
+                chatBox.innerHTML += <div class="p-2 bg-gray-300 text-black rounded-lg max-w-xs">${botReply}</div>;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+
+            document.getElementById("user-input").value = "";
+        }
