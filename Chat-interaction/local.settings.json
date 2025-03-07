@@ -4,8 +4,8 @@
       "AzureWebJobsStorage": "UseDevelopmentStorage=true",
       "FUNCTIONS_WORKER_RUNTIME": "python",
       "DEPLOYMENT_NAME": "gpt-4o",
-      "OPENAI_API_BASE": "https://aoai-testa.openai.azure.com/",
-      "OPENAI_API_KEY": "XPDp1aSVWmWqAEpcbCdKdC61dSNzLNWoBbNzZIVm26D1KY3PD3AJJQQJ99BCACYeBjFXJ3w3AAABACOGyPiP",
+      "OPENAI_API_BASE": "<provide openAI endpoint>",
+      "OPENAI_API_KEY": "<provide openAI key>",
       "OPENAI_API_VERSION": "2024-10-21", 
       "OPENAI_API_TYPE": "azure"
     }
